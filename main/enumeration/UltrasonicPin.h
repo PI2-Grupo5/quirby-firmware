@@ -1,6 +1,6 @@
 #pragma once
 
-enum class UltrasonicPin
+enum UltrasonicPin
 {
 	PIN_ECHO_R = 3, 
 	PIN_TRIP_R = 19,

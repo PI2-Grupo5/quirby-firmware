@@ -1,6 +1,6 @@
 #pragma once
 
-enum class PWMPin
+enum PWMPin
 {
 	PIN_SIGNAL = 12
 };

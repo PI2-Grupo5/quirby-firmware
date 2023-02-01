@@ -1,6 +1,6 @@
 #pragma once
 
-enum class WheelPin
+enum WheelPin
 {
 	PIN_IN1 = 14, 
 	PIN_IN4 = 25,

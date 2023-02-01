@@ -1,6 +1,6 @@
 #pragma once
 
-enum class MPUPin
+enum MPUPin
 {
 	PIN_SCL = 21, 
 	PIN_SDA = 22

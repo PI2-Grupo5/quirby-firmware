@@ -1,6 +1,6 @@
 #pragma once
 
-enum class IRPin
+enum IRPin
 {
 	PIN_INFRA = 18
 };
