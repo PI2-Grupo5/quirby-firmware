@@ -4,12 +4,14 @@
 #include "IRPin.h"
 #include "WheelPin.h"
 #include "UltrasonicSensors.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "driver/gpio.h"
+
 
 extern "C" void app_main()
 {
-		std::cout << int(IOPin::PIN_LED) << '\n';
-		std::cout << int(IRPin::PIN_INFRA) << '\n';
-		std::cout << int(WheelPin::PIN_IN1) << '\n';
-        UltrasonicSensors teste;
-        std::cout << teste.x << '\n';
+        UltrasonicSensors teste(GPIO_NUM_0,GPIO_NUM_3);
+
 }
