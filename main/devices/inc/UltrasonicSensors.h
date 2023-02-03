@@ -8,10 +8,9 @@
 
 class UltrasonicSensors {
 public:
-    int x = 33;
-    UltrasonicSensors(gpio_num_t trip, gpio_num_t echo);
+    UltrasonicSensors();
 
-    void setupPins(gpio_num_t pinSet);
+    void setupPin(gpio_num_t pinSet);
 
     int getTrip() const;
     void setTrip(int trip);
