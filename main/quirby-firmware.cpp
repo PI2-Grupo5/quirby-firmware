@@ -9,15 +9,16 @@
 #include "Wheel.h"
 #include "FallSensor.h"
 #include "PWM.h"
-#include <inttypes.h>
-
+#include "Movement.h"
 
 extern "C" void app_main()
 {
         UltrasonicSensors teste;
-        Wheel teste2;
         FallSensor teste3;
         PWM teste4;
+        Movement direcao;
+
+        direcao.run();
 
         int sim;
 
