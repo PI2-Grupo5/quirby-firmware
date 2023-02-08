@@ -3,7 +3,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h" 
-#include "driver/pulse_cnt.h"
+// #include "driver/pulse_cnt.h"
+#include "nvs_flash.h"
 
 #include "UltrasonicSensors.h"
 #include "Wheel.h"
@@ -11,6 +12,8 @@
 #include "PWM.h"
 #include "Movement.h"
 #include "ultrasonic.h"
+#include "wifi.h"
+#include "Http.h"
 
 
 #define MAX_DISTANCE_CM 500 // 5m max
@@ -78,6 +81,7 @@ extern "C" void app_main()
         FallSensor teste3;
         PWM teste4;
         Movement direcao;
+		Http App;
 
         direcao.run();
 
@@ -85,6 +89,13 @@ extern "C" void app_main()
 
         xTaskCreate(ultrasonic, "ultrasonic", 1024*2, NULL, 2, NULL);
 
+		    App.setup();
+		
+		while(1)
+		{
+			App.run();
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
+		}
 
 
 }
