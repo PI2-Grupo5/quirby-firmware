@@ -15,7 +15,9 @@ public:
     bool goRight();
     bool goDown();
     bool goLeft();
+    bool stop();
     void run();
+    int  getMode();
     void setManualMode(int valueFSM);
 
 private:

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -27,7 +28,14 @@
 #define GPIO_TRIGGER 23
 #define GPIO_ECHO 35
 
-static const char *TAG = "ULTRASONIC";
+#define STACK_SIZE 2048
+
+std::string DEBUG = "DEBUG";
+
+int queroDormir = 1;
+
+TaskHandle_t xHandleINFRA = NULL;
+TaskHandle_t xHandleMOV = NULL;
 
 typedef struct {
 	uint16_t command;
@@ -116,64 +124,79 @@ void trataInterrupcaoBotao(void *params)
   }
 }
 
+void logicaMovimento( void * pvParameters)
+{
+	int valordoido = 0;
+	int temp = 0;
+
+	while(1)
+	{
+		if(queroDormir)
+		{
+			valordoido = (int)esp_random();
+			valordoido = valordoido % 3;
+
+			direcao.setManualMode(1);
+			direcao.run();
+			
+			ESP_LOGI(DEBUG.c_str(), "Primeiro modo: %d", direcao.getMode());
+
+			vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+			if (valordoido >= 0) {
+				temp = valordoido + 2;
+			}
+
+			direcao.setManualMode(temp);
+			direcao.run();
+
+			ESP_LOGI(DEBUG.c_str(), "Primeiro modo: %d", direcao.getMode());
+
+			vTaskDelay(2000 / portTICK_PERIOD_MS);
+		} else 
+		{
+			direcao.stop();
+			vTaskSuspend(xHandleMOV);
+		}
+	}
+
+	ESP_LOGI(DEBUG.c_str(), "Desligando motores");
+
+	direcao.stop();
+	
+
+}
 
 extern "C" void app_main()
 {
 	UltrasonicSensors teste;
 	PWM teste4;
 
+
+	static uint8_t ucParameterToPass;
+
+
 	Http App;
-	int valordoido = 0;
-	int temp = 0;
 
   	filaDeInterrupcao = xQueueCreate(10, sizeof(int));
-  	xTaskCreate(trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
-
-	  gpio_install_isr_service(0);
-  	  gpio_isr_handler_add((gpio_num_t)PIN_INFRA, gpio_isr_handler, (void *) (gpio_num_t)PIN_INFRA);
+  	xTaskCreate(trataInterrupcaoBotao, "SensorInfra", STACK_SIZE, &ucParameterToPass, 1, &xHandleINFRA);
 
 
+	gpio_install_isr_service(0);
+  	gpio_isr_handler_add((gpio_num_t)PIN_INFRA, gpio_isr_handler, (void *) (gpio_num_t)PIN_INFRA);
 
-	while(1) {
+	xTaskCreate(logicaMovimento, "Movimentacao", STACK_SIZE, &ucParameterToPass, 1 , &xHandleMOV);
 
-		valordoido = (int)esp_random();
-		valordoido = valordoido % 3;
-
-		std::cout << "valor teste: " << valordoido << '\n';
-
-		
-
-		direcao.setManualMode(1);
-		direcao.run();
-
-		vTaskDelay(2000 / portTICK_PERIOD_MS);
-
-		if (valordoido >= 0) {
-			temp = valordoido + 2;
-		}
-
-		direcao.setManualMode(temp);
-		direcao.run();
-
-
-		vTaskDelay(2000 / portTICK_PERIOD_MS);
-
-	}
-
-
-
-
-	// int sim;
-
-	// xTaskCreate(ultrasonic, "ultrasonic", 1024*2, NULL, 2, NULL);
-
-	// 	App.setup();
 	
-	// while(1)
-	// {
-	// 	App.run();
-	// 	vTaskDelay(1000 / portTICK_PERIOD_MS);
-	// }
+	vTaskDelay(20000 / portTICK_PERIOD_MS);
+
+	ESP_LOGI(DEBUG.c_str(), "quero dormir agora" );
+	queroDormir = 0;
+
+	vTaskDelay(60000 / portTICK_PERIOD_MS);
+
+	vTaskDelete( xHandleMOV );
+	vTaskDelete( xHandleINFRA );
 
 
 }
