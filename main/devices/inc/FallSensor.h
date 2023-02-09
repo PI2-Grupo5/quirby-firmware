@@ -11,11 +11,11 @@ public:
     FallSensor();
 
     void setupPin(gpio_num_t pinSet);
-    u_int8_t getDrop();
+    int getDrop();
 
 
 
 private:
-    u_int8_t isDrop;
+    int isDrop;
 
 };

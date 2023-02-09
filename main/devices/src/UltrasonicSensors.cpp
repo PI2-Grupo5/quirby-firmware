@@ -9,7 +9,6 @@ UltrasonicSensors::UltrasonicSensors() {
     setupPin((gpio_num_t)PIN_TRIP_L);
 }
 
-
 void UltrasonicSensors::setupPin(gpio_num_t pinSet) {
     gpio_reset_pin(pinSet);
     gpio_set_direction(pinSet, GPIO_MODE_INPUT);
