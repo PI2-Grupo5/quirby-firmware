@@ -5,6 +5,7 @@
 #include "freertos/queue.h" 
 // #include "driver/pulse_cnt.h"
 #include "nvs_flash.h"
+#include "esp_random.h"
 
 #include "UltrasonicSensors.h"
 #include "Wheel.h"
@@ -75,27 +76,104 @@ void ultrasonic(void *pvParamters)
 }
 
 
+	QueueHandle_t filaDeInterrupcao;
+	Movement direcao;
+
+static void IRAM_ATTR gpio_isr_handler(void *args)
+{
+  int pino = (int)args;
+  xQueueSendFromISR(filaDeInterrupcao, &pino, NULL);
+}
+
+void trataInterrupcaoBotao(void *params)
+{
+  FallSensor queda;
+  gpio_num_t pino = (gpio_num_t)PIN_INFRA;
+  int contador = 0;
+
+  while(true)
+  {
+    if(xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY))
+    {
+      // De-bouncing
+      int estado = gpio_get_level(pino);
+      if(estado == 1)
+      {
+        gpio_isr_handler_remove((gpio_num_t)PIN_INFRA);
+        while(gpio_get_level(pino) == estado)
+        {
+			direcao.setManualMode(3);
+			direcao.run();
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+        }
+
+        // Habilitar novamente a interrupção
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        gpio_isr_handler_add(pino, gpio_isr_handler, (void *) pino);
+      }
+
+    }
+  }
+}
+
+
 extern "C" void app_main()
 {
-        UltrasonicSensors teste;
-        FallSensor teste3;
-        PWM teste4;
-        Movement direcao;
-		Http App;
+	UltrasonicSensors teste;
+	PWM teste4;
 
-        direcao.run();
+	Http App;
+	int valordoido = 0;
+	int temp = 0;
 
-        int sim;
+  	filaDeInterrupcao = xQueueCreate(10, sizeof(int));
+  	xTaskCreate(trataInterrupcaoBotao, "TrataBotao", 2048, NULL, 1, NULL);
 
-        xTaskCreate(ultrasonic, "ultrasonic", 1024*2, NULL, 2, NULL);
+	  gpio_install_isr_service(0);
+  	  gpio_isr_handler_add((gpio_num_t)PIN_INFRA, gpio_isr_handler, (void *) (gpio_num_t)PIN_INFRA);
 
-		    App.setup();
+
+
+	while(1) {
+
+		valordoido = (int)esp_random();
+		valordoido = valordoido % 3;
+
+		std::cout << "valor teste: " << valordoido << '\n';
+
 		
-		while(1)
-		{
-			App.run();
-			vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+		direcao.setManualMode(1);
+		direcao.run();
+
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+		if (valordoido >= 0) {
+			temp = valordoido + 2;
 		}
+
+		direcao.setManualMode(temp);
+		direcao.run();
+
+
+		vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+	}
+
+
+
+
+	// int sim;
+
+	// xTaskCreate(ultrasonic, "ultrasonic", 1024*2, NULL, 2, NULL);
+
+	// 	App.setup();
+	
+	// while(1)
+	// {
+	// 	App.run();
+	// 	vTaskDelay(1000 / portTICK_PERIOD_MS);
+	// }
 
 
 }
