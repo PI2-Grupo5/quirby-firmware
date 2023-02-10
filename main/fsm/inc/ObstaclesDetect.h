@@ -1,27 +1,24 @@
 #pragma once
 
-#include "UltrasonicSensor.h"
+#include "UltrasonicSensors.h"
 #include "driver/gpio.h"
-#include "driver/pulse_cnt.h"
 
 class ObstaclesDetect
 {
 public:
 
-    UltrasonicSensor initUltrasonicSetup;
+    UltrasonicSensors initUltrasonic;
 
     ObstaclesDetect();
 
     bool getBlockedLeft();
     bool getBlockedMiddle();
     bool getBlockedRight();
-    void run();
+    void run(); 
 
 private:
 
     bool isBlockedLeft;
     bool isBlockedMiddle;
     bool isBlockedRight;
-
-
 };

@@ -3,6 +3,7 @@
 Movement::Movement()
 {
     valueFSM = 1;
+    machineState = 0;
 }
 
 bool Movement::stop()
@@ -16,7 +17,6 @@ bool Movement::stop()
 
     return true;
 }
-
 
 bool Movement::goFront()
 {
@@ -66,6 +66,8 @@ bool Movement::goLeft()
     return true;
 }
 
+
+
 void Movement::run()
 {
     switch (valueFSM)
@@ -84,7 +86,7 @@ void Movement::run()
         break;
     case 4:
         goLeft();
-        break;  
+        break;
     default:
         std::cout << "Error" << '\n';
         break;

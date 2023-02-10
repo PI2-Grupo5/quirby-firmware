@@ -2,37 +2,47 @@
 
 ObstaclesDetect::ObstaclesDetect()
 {
-    valueFSM = 1;
+    isBlockedLeft = false;
+    isBlockedMiddle = false;
+    isBlockedRight = false;
 }
 
 
 bool ObstaclesDetect::getBlockedLeft()
 {
-    return isBlockedLeft;
+    if ( distanceR < 6 )
+    {
+        return true;
+    }
+    return false;
 }
 
 bool ObstaclesDetect::getBlockedMiddle()
 {
-    return isBlockedMiddle;
+    if ( distanceM < 6 )
+    {
+        return true;
+    }
+    return false;
 }
 
 bool ObstaclesDetect::getBlockedRight()
 {
-    return isBlockedRight;
+    if ( distanceL < 6 )
+    {
+        return true;
+    }
+    return false;
 }
 
 // TODO FAZER TESTES COM O MODULO HC-SR04
 void ObstaclesDetect::run()
 {
-    while(1)
-    {
-        gpio_set_level((gpio_num_t)PIN_IN3, 1);
-        gpio_set_level((gpio_num_t)PIN_IN3, 1);
-        gpio_set_level((gpio_num_t)PIN_IN3, 1);
-    }
+    // while(1)
+    // {
+    //     gpio_set_level((gpio_num_t)PIN_IN3, 1);
+    //     gpio_set_level((gpio_num_t)PIN_IN3, 1);
+    //     gpio_set_level((gpio_num_t)PIN_IN3, 1);
+    // }
 }
 
-void ObstaclesDetect::setManualMode(int valueFSM)
-{
-    this->valueFSM = valueFSM;
-}
