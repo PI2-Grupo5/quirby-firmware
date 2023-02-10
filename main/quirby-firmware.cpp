@@ -208,6 +208,9 @@ void logicaMovimento( void * pvParameters)
 			vTaskDelay(2000 / portTICK_PERIOD_MS);
 
 			if (valordoido >= 0) {
+				if (valordoido == 3) {
+					valordoido = 1;
+				}
 				temp = valordoido + 2;
 			}
 
@@ -232,7 +235,7 @@ void logicaMovimento( void * pvParameters)
 
 bool isStopped(void)
 {
-	if ( aceleracao > -250 && aceleracao < 150 ) 
+	if ( aceleracao > -110 && aceleracao < 100 ) 
 	{
 		ESP_LOGW(mpuTAG.c_str(), "To parado!!!");
 		return true;
@@ -347,7 +350,7 @@ extern "C" void app_main()
 
 	vTaskDelay(10000 / portTICK_PERIOD_MS);
 
-	// xTaskCreate(task_mpu6050, "wtf", 2048, NULL, 1, NULL);
+	xTaskCreate(task_mpu6050, "wtf", 2048, NULL, 1, NULL);
 
 
 	
