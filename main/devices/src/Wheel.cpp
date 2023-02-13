@@ -1,8 +1,11 @@
 #include "Wheel.h"
 
 Wheel::Wheel() {
+    setupPin((gpio_num_t)15);
     setupPin((gpio_num_t)13);
+    gpio_set_level((gpio_num_t)15, 0);
     gpio_set_level((gpio_num_t)13, 1);
+
     setupPin((gpio_num_t)PIN_IN1);
     setupPin((gpio_num_t)PIN_IN4);
     setupPin((gpio_num_t)PIN_IN3);

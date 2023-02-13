@@ -10,7 +10,7 @@ ObstaclesDetect::ObstaclesDetect()
 
 bool ObstaclesDetect::getBlockedLeft()
 {
-    if ( distanceR < 6 )
+    if ( distanceR < 10 )
     {
         return true;
     }
@@ -19,7 +19,7 @@ bool ObstaclesDetect::getBlockedLeft()
 
 bool ObstaclesDetect::getBlockedMiddle()
 {
-    if ( distanceM < 6 )
+    if ( distanceM < 10 )
     {
         return true;
     }
@@ -28,7 +28,7 @@ bool ObstaclesDetect::getBlockedMiddle()
 
 bool ObstaclesDetect::getBlockedRight()
 {
-    if ( distanceL < 6 )
+    if ( distanceL < 10 )
     {
         return true;
     }

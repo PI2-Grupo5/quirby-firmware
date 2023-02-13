@@ -5,10 +5,12 @@
 #include "freertos/task.h"
 #include "freertos/queue.h" 
 #include "driver/i2c.h"
+#include "driver/gpio.h"
 // #include "driver/pulse_cnt.h"
 #include "nvs_flash.h"
 #include "esp_random.h"
 #include "ObstaclesDetect.h"
+#include "driver/touch_pad.h"
 
 #include "Wheel.h"
 #include "FallSensor.h"
@@ -16,6 +18,7 @@
 #include "Movement.h"
 #include "wifi.h"
 #include "Http.h"
+// #include "http_client.h"
 
 #define PIN_SDA 21
 #define PIN_CLK 22
@@ -331,6 +334,49 @@ void fsm(void * params)
 
 extern "C" void app_main()
 {
+
+	short unsigned int touchValue = 1;
+
+    ESP_ERROR_CHECK(touch_pad_init());
+	touch_pad_set_voltage(TOUCH_HVOLT_2V7, TOUCH_LVOLT_0V5, TOUCH_HVOLT_ATTEN_1V);
+ 	touch_pad_config((touch_pad_t)0, 0);
+
+	gpio_reset_pin(GPIO_NUM_15);
+    gpio_set_direction(GPIO_NUM_15, GPIO_MODE_OUTPUT);
+    gpio_pulldown_dis(GPIO_NUM_15);
+    gpio_pullup_dis(GPIO_NUM_15);
+
+    gpio_set_level(GPIO_NUM_15, 1);
+
+	gpio_reset_pin(GPIO_NUM_16);
+    gpio_set_direction(GPIO_NUM_16, GPIO_MODE_INPUT);
+    gpio_pulldown_dis(GPIO_NUM_16);
+    gpio_pullup_en(GPIO_NUM_16);
+
+	int ligada = 0;
+
+	vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+	while ( !ligada )
+	{
+   		// touch_pad_read((touch_pad_t)0, &touchValue);
+        // printf("toque =>> %d\n", touchValue);
+	
+				
+
+		ligada = gpio_get_level(GPIO_NUM_16);
+        printf("ligada =>> %d\n", ligada);	
+	
+
+		//ligada = gpio_get_level(GPIO_NUM_16);
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+	}
+
+	printf("INICIEI\n");
+
+    gpio_set_level(GPIO_NUM_15, 0);
+
 	PWM teste4;
 
 	static uint8_t ucParameterToPass;
@@ -353,8 +399,17 @@ extern "C" void app_main()
 	xTaskCreate(task_mpu6050, "wtf", 2048, NULL, 1, NULL);
 
 
-	
-	vTaskDelay(120000 / portTICK_PERIOD_MS);
+	App.setup();
+
+	while(ligada)
+	{
+		App.run();
+		ligada = gpio_get_level(GPIO_NUM_16);
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+	}
+
+    gpio_set_level(GPIO_NUM_15, 1);
 
 	ESP_LOGI(DEBUG.c_str(), "quero dormir agora" );
 	queroDormir = 0;
@@ -365,6 +420,6 @@ extern "C" void app_main()
 	vTaskDelete( xHandleMOV );
 	vTaskDelete( xHandleINFRA );
 
-
+	esp_restart();
 
 }
