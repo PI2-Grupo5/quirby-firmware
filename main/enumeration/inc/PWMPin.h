@@ -2,6 +2,6 @@
 
 enum PWMPin
 {
-	PIN_SIGNAL = 12
+	PIN_SIGNAL = 15
 };
 
