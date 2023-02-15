@@ -18,7 +18,7 @@
 #include "Movement.h"
 #include "wifi.h"
 #include "Http.h"
-// #include "http_client.h"
+#include "http_client.h"
 
 #define PIN_SDA 21
 #define PIN_CLK 22
@@ -246,6 +246,23 @@ bool isStopped(void)
 	return false;
 }
 
+void runWifi(void * pvParameters)
+{
+	Http App;
+    App.setup();
+
+	while(1) {
+		App.run();
+	
+		while(App.Wifi.GetState() == WIFI::Wifi::state_e::CONNECTED){
+			http_request();	
+			vTaskDelay(10000 / portTICK_PERIOD_MS);	
+			http_patch();	
+			vTaskDelay(5000 / portTICK_PERIOD_MS);
+		}
+	}
+
+}
 
 void fsm(void * params)
 {
@@ -356,6 +373,8 @@ extern "C" void app_main()
 	int ligada = 0;
 
 	vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+	xTaskCreate(runWifi, "Wifi", 4096, NULL, 1, NULL);
 
 	while ( !ligada )
 	{

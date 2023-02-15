@@ -1,7 +1,11 @@
-// #ifndef HTTP_CLIENT_H
-// #define HTTP_CLIENT_H
+#pragma once
 
-// void http_request();
-// void https_request();
+#include <iostream>
+#include <string>
+#include "esp_event.h"
+#include "esp_http_client.h"
+#include "esp_log.h"
 
-// #endif
+void http_request();
+void http_put();
+void http_patch();
